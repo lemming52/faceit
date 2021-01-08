@@ -1,2 +1,2 @@
 test:
-	@go test ./... -coverprofile test-coverage.out
+	@go test ./service/... -coverprofile test-coverage.out
