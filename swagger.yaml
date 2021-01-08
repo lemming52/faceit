@@ -1,0 +1,330 @@
+openapi: "3.0.0"
+info:
+  version: "1.0.0"
+  title: Faceit User Service
+  description: Demonstration service in response to faceit tech test brief.
+
+paths:
+  /healthcheck:
+    get:
+      summary: Basic service healthcheck
+      description: Return version and deployment info if service is up
+      operationId: Healthcheck
+      tags:
+        - Good Citizen
+      responses:
+        '200':
+          description: Healthcheck
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - name
+                  - version
+                properties:
+                  name:
+                    type: string
+                  version:
+                    type: string
+  /docs:
+    get:
+      summary: Prerendered documentation HTML
+      description: Return documentation for the endpoints
+      operationId: docs
+      tags:
+        - Good Citizen
+      responses:
+        '200':
+          description: Rendered docs
+
+  /users:
+    get:
+      summary: Filter stored users
+      description: Apply query param filters to exact match users. In the absence of query params will return all users
+      operationId: Filter
+      tags:
+       - Users
+      parameters:
+        - in: query
+          name: country
+          description: Base country of user
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: nickname
+          description: User nickname
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: forename
+          description: First name of user
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: surname
+          description: Surname of user
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: email
+          description: Email of user
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: password
+          description: User password
+          schema:
+            type: string
+          required: false
+      responses:
+        '200':
+          description: Object returned containing list of all datasets that match filter criteria, each entry listed completely
+          content:
+            application/json:
+              schema:
+                type: object
+                description: Wrapper object containing individual entries and top level values
+                properties:
+                  count:
+                    type: integer
+                    description: Number of users that match filter criteria
+                  results:
+                    type: array
+                    description: All matching results
+                    items:
+                      $ref: '#/components/schemas/User'
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+    post:
+      summary: Add user to database
+      description: Add a new user to the database
+      operationId: Add
+      tags:
+       - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                forename:
+                  description: First name of user
+                  type: string
+                surname:
+                  description: Surname of user
+                  type: string
+                nickname:
+                  description: Nickname of user
+                  type: string
+                password:
+                  description: User password, unencrypted plaintext
+                  type: string
+                email:
+                  description: User email, unencrypted plaintext
+                  type: string
+                country:
+                  description: User country
+                  type: string
+      responses:
+        '201':
+          description: New user stored in database
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+              examples:
+                User:
+                  $ref: "#/components/examples/User"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+  /users/{userId}:
+    get:
+      summary: Retrieve specific user
+      description: Using a unique user id recover the data for a given user
+      operationId: Get
+      tags:
+       - Users
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      responses:
+        '201':
+          description: User successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+              examples:
+                User:
+                  $ref: "#/components/examples/User"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+    delete:
+      summary: Delete a specific user
+      description: Delete a specific user using the provided ID
+      operationId: Delete
+      tags:
+        - Users
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      responses:
+        '204':
+          description: Dataset deleted
+
+    put:
+      summary: Update specific user information
+      description: Using a unique user id update the data for that user
+      operationId: Update
+      tags:
+        - Users
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRequest"
+            examples:
+              request:
+                $ref: "#/components/examples/UserRequest"
+
+      responses:
+        '200':
+          description: User successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+              examples:
+                User:
+                  $ref: "#/components/examples/User"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '404':
+          $ref: "#/components/responses/NotFound"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  schemas:
+    Error:
+      description: Catch all error structure
+      type: object
+      properties:
+        code:
+          description: Error code of error
+          type: string
+        description:
+          description: Description of error that occured
+          type: string
+    User:
+      description: User representation structure
+      type: object
+      properties:
+        userId:
+          description: Uniquely generated uuid for the user
+          type: string
+        forename:
+          description: First name of user
+          type: string
+        surname:
+          description: Surname of user
+          type: string
+        nickname:
+          description: Nickname of user
+          type: string
+        password:
+          description: User password, unencrypted plaintext
+          type: string
+        email:
+          description: User email, unencrypted plaintext
+          type: string
+        country:
+          description: User country
+          type: string
+    UserRequest:
+      type: object
+      properties:
+        forename:
+          description: First name of user
+          type: string
+        surname:
+          description: Surname of user
+          type: string
+        nickname:
+          description: Nickname of user
+          type: string
+        password:
+          description: User password, unencrypted plaintext
+          type: string
+        email:
+          description: User email, unencrypted plaintext
+          type: string
+        country:
+          description: User country
+          type: string
+
+  parameters:
+    UserId:
+      in: path
+      name: userId
+      required: true
+      schema:
+        type: string
+      description: unique user id
+
+
+  responses:
+    BadRequest:
+      description: Bad request, input parameters do not match expected format
+      content:
+        application/json:
+         schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+         schema:
+            $ref: '#/components/schemas/Error'
+    InternalServerError:
+      description: Internal server error, internal component failed unexpectedly
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  examples:
+    User:
+      value:
+        userId: 07f80b8a-b4a9-4f24-808d-e966937f62ff
+        forename: Andrew
+        surname: S
+        nickname: lemming52
+        password: correcthorsebatterystaple
+        email: lemming52@github.com
+        country: UK
+    UserRequest:
+      value:
+        forename: Andrew
+        surname: S
+        nickname: lemming52
+        password: correcthorsebatterystaple
+        email: lemming52@github.com
+        country: UK

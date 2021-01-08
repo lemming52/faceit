@@ -1,0 +1,50 @@
+{
+    "faceit-users": [{
+        "PutRequest": {"Item": {
+            "userId": {"S": "27ec4aaa-6411-424a-993e-5b9a1aadf8d4"},
+            "forename": {"S": "Andreas"},
+            "surname": {"S": "Hojsleth"},
+            "nickname": {"S": "Xyp9x"},
+            "password": {"S": "astralis"},
+            "email": {"S": "ah@notarealemail.com"},
+            "country": {"S": "DEN"}
+        }}
+    },{
+        "PutRequest": {"Item": {
+            "userId": {"S": "0144a93a-c655-49f9-8a86-57533a083333"},
+            "forename": {"S": "Nathan"},
+            "surname": {"S": "Schmitt"},
+            "nickname": {"S": "NBK-"},
+            "password": {"S": "og"},
+            "email": {"S": "ns@notarealemail.com"},
+            "country": {"S": "FRA"}
+        }}
+    },{ "PutRequest": {"Item": {
+            "userId": {"S": "d337cfa5-cba3-4389-b982-12fbc447dad7"},
+            "forename": {"S": "Christopher"},
+            "surname": {"S": "Alesund"},
+            "nickname": {"S": "GeT_RiGhT"},
+            "password": {"S": "nip"},
+            "email": {"S": "ca@notarealemail.com"},
+            "country": {"S": "SWE"}
+        }}
+    }, {"PutRequest": {"Item": {
+            "userId": {"S": "abc13eb8-8545-4d20-93b4-bfb94431b7a4"},
+            "forename": {"S": "Sean"},
+            "surname": {"S": "Kaiwai"},
+            "nickname": {"S": "Gratisfaction"},
+            "password": {"S": "100T"},
+            "email": {"S": "ah@notarealemail.com"},
+            "country": {"S": "NZ"}
+        }}
+    },{"PutRequest": {"Item": {
+            "userId": {"S": "testing"},
+            "nickname": {"S": "lemming52"},
+            "country": {"S": "NZ"},
+            "forename": {"S": "andrew"},
+            "surname": {"S": "s"},
+            "password": {"S": "correcthorsebatterystaple"},
+            "email": {"S": "lemming52@github.com"}
+        }}
+    }]
+}
