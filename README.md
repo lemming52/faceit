@@ -89,3 +89,7 @@ TraceID; key to have, either attach to all new requests or propagate for tracing
 ### Component tests
 
 I've added some light component tests; but the design of them is a little self referential. In an ideal world the seeding, checking and cleanup would be carried out by interacting directly with dynamo, but for the sake of reducing boiler plate I've just used endpoints to do that, and tried to order the endpoints in a way that builds up reliability.
+
+### Docs
+
+There's a few different options for linking the swagger generation of docs I've used here to the actual code (https://github.com/swaggo/swag, https://github.com/go-swagger/go-swagger), but I've not used any of them prior to this. In this case the swagger file will be manually maintained and compiled to an HTML file which is then added to a repo. You can shift the order of operations around with this, the HTML could be generated during the dockerised build in production rather than manually here.
