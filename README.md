@@ -41,7 +41,7 @@ make test
 
 The component tests here are a pseudo-substitute for testing on a canary/dev environment, but use the endpoints of a running service. To run these, once you have a running server and localstack container
 ```
-make component-tests
+make componenttests
 ```
 
 ## Brief
@@ -126,6 +126,8 @@ TraceID; key to have, either attach to all new requests or propagate for tracing
 ### Component tests
 
 I've added some light component tests; but the design of them is a little self referential. In an ideal world the seeding, checking and cleanup would be carried out by interacting directly with dynamo, but for the sake of reducing boiler plate I've just used endpoints to do that, and tried to order the endpoints in a way that builds up reliability.
+
+So, in a production environment, the component tests would be completely seperate from the service code, would seed and tidy up entities and messages they need.
 
 ### Docs
 

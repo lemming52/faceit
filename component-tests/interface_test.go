@@ -43,6 +43,14 @@ func NewSQSClient(t *testing.T) *SQSClient {
 	}
 }
 
+func (s *SQSClient) deleteMessage(t *testing.T, receiptHandle *string) {
+	_, err := s.Client.DeleteMessage(&sqs.DeleteMessageInput{
+		QueueUrl:      s.Url,
+		ReceiptHandle: receiptHandle,
+	})
+	assert.Nil(t, err)
+}
+
 func TestSNSEmitted(t *testing.T) {
 	payload := `{
 		"forename": "Jacky",
@@ -76,6 +84,7 @@ func TestSNSEmitted(t *testing.T) {
 		MessageAttributeNames: []*string{aws.String("All")},
 	})
 	assert.Equal(t, expectedMessages, len(result.Messages))
+	defer svc.deleteMessage(t, result.Messages[0].ReceiptHandle)
 
 	message := &model.Message{}
 	err = json.Unmarshal([]byte(*result.Messages[0].Body), message)

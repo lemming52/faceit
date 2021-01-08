@@ -1,5 +1,5 @@
 test:
 	@go test ./service/...
 
-component-tests:
-	@go test ./component-tests/...
+componenttests:
+	@go test ./component-tests/... -count=1
