@@ -1,11 +1,48 @@
-# Faceit TT
+# Faceit Tech Test
 
-docker / run docker compose
+## Installation Prerequisites
 
-awscli installed
+The following tools are required to run the service locally:
+* Docker / Docker compose
+* The AWS CLI, with a local dummy configuration
+* Golang
+* [Localstack](https://github.com/localstack)
 
-aws credentials may need configuring, but will be ignored
+For full development, [Redoc](https://github.com/Redocly/redoc) is also used to generate the static doc page.
 
+## Running
+
+### Service
+
+The service runs locally using a localstack container to emulate the database and messaging implementations.
+
+Start up the localstack container
+```
+docker-compose up
+```
+
+Separately
+```
+# Build the resources and populate the database with some test data
+source localstack.sh
+
+# run service
+go run .
+```
+
+### Unit tests
+
+The unit tests of the handlers (with mocked interface clients) can be run by
+```
+make test
+```
+
+### Full Component Tests
+
+The component tests here are a pseudo-substitute for testing on a canary/dev environment, but use the endpoints of a running service. To run these, once you have a running server and localstack container
+```
+make component-tests
+```
 
 ## Brief
 

@@ -1,2 +1,5 @@
 test:
-	@go test ./service/... -coverprofile test-coverage.out
+	@go test ./service/...
+
+component-tests:
+	@go test ./component-tests/...

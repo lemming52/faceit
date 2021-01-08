@@ -86,11 +86,12 @@ func TestAddUser(t *testing.T) {
 	}
 
 	// Check if stored using Get endpoint
+	storedCode := 200
 	uri = fmt.Sprintf("%s/users/%s", getHost(), expected.Id)
 	req, err = http.NewRequest(http.MethodGet, uri, nil)
 	res, err = client.Do(req)
 	assert.Nil(t, err, "error making request")
-	assert.Equal(t, codeWant, res.StatusCode)
+	assert.Equal(t, storedCode, res.StatusCode)
 
 	body, err = ioutil.ReadAll(res.Body)
 	assert.Nil(t, err)
