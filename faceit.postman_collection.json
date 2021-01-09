@@ -1,0 +1,177 @@
+{
+	"info": {
+		"_postman_id": "54f28b44-a2eb-4a9a-93a2-b4302b34f6e2",
+		"name": "faceit",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "update",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"forename\": \"andrew2\",\r\n    \"surname\": \"s\",\r\n    \"nickname\": \"lemming52\",\r\n    \"password\": \"correcthorsebatterystaple\",\r\n    \"email\": \"lemming52@github.com\",\r\n    \"country\": \"NZ\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/users/testing",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users",
+						"testing"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/users/64b65e47-00b4-4d9c-8805-dddaa48010bd",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users",
+						"64b65e47-00b4-4d9c-8805-dddaa48010bd"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/users/testing",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users",
+						"testing"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"forename\": \"andrew2\",\r\n    \"surname\": \"s\",\r\n    \"nickname\": \"lemming52\",\r\n    \"password\": \"correcthorsebatterystaple\",\r\n    \"email\": \"lemming52@github.com\",\r\n    \"country\": \"NZ\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/users",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "filter",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/users",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users"
+					],
+					"query": [
+						{
+							"key": "forename",
+							"value": "Christopher",
+							"disabled": true
+						},
+						{
+							"key": "country",
+							"value": "NZ",
+							"disabled": true
+						},
+						{
+							"key": "surname",
+							"value": "Schmitt",
+							"disabled": true
+						},
+						{
+							"key": "nickname",
+							"value": "Xyp9x",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "og",
+							"disabled": true
+						},
+						{
+							"key": "email",
+							"value": "ah@notarealemail.com",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "healthcheck",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/healthcheck",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"healthcheck"
+					],
+					"query": [
+						{
+							"key": "rank",
+							"value": "5",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

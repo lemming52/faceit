@@ -28,6 +28,20 @@ docker-compose up
 source local-stack.sh
 ```
 
+### Usage
+
+The included postman collection has the set of endpoints for the service, and the full docs are in the `swagger.yaml` file and on the docs endpoint, but the headlines are below (the service runs on `localhost:3000`):
+
+URL | Method | Description
+----|--------|------------
+`/healthcheck` | Get | Display basic service status info
+`/docs` | Get | Display the pre-render HTML docs
+`/users` | Get | Filter users by provided query params
+`/users` | Post | Add a new user
+`/users/{id}` | Get | Retrieve a specific user
+`/users/{id}` | Put | Update a specific user
+`/users/{id}` | Delete | Delete a specific user
+
 ### Unit tests
 
 The unit tests of the handlers (with mocked interface clients) can be run by
@@ -44,34 +58,18 @@ make componenttests
 
 ## Brief
 
-###	A sensible storage mechanism for the Users
+Remark | Comment
+-------|--------
+Each user entity must consist of a first name, last name, nickname, password, email and country. | Defined in [model](https://github.com/lemming52/faceit/blob/master/model/model.go#L11)
+The service must allow you to ... | Each operation has a distinct endpoint
+A sensible storage mechanism for the Users / The ability to send events to notify other interested services of changes to User entities | The service code sees an interface object to handle data access and messaging, both of these are provided by localstack AWS components, DynamoDB and SNS.
+Meaningful logs | Logging messages thoughout with exposed fields where required
+Self-documenting end points | RESTful design of the users endpoint and rendered docs hosted on `/docs`
+Health checks | Healthcheck endpoint built into service
 
-From the perspective of the service code, it needs some kind of persisent DB for the users.
+# Discussion
 
-### The ability to send events to notify other interested services of changes to User entities
-
-To this end, any of the mutation endpoints (add, update, delete) needs to emit a message whenever a change is succesfully carried out. The others need not publish. For the sake of the exercise I've just configured a publisher attached to a queue for testing, and not done any sort of lifecycle configuration.
-
-### Health checks
-
-The service exposes a simple healthcheck endpoint that returns the service name and version. This can clearly be extended as required.
-
-# TODO
-
-Dockerise
-Tidy logging to be consistent
-Add index on email
-Add tests
-Add swagger renderer
-Add check if exists
-
-## Clients
-
-For both the clients, since they're used here primarily for the tests, I've not spent much time preparing them for a live environment; the regions, credentials and aws constants like table name and such are hardcoded into the instantiation methods. In a production environment, such details (which I would assume would also relate to which environment out of dev, prod...) would be passed to the execution container outwith the code and read from the environment, rather than being placed in the code.
-
-### DynamoDB
-
-### SNS
+The sections below deal with more loose discussion on the decisions, extensions and assumptions.
 
 ## Assumptions
 
@@ -97,9 +95,13 @@ I have less experience with alternative messaging systems, but the big options a
 
 ## Extensions
 
+### Production readiness
+
+As discussed in the brief, this was not required to be production ready. To do so the clients, dynamo and sns, would need rewriting to the full production configuration and the checks i mention throughout the readme applied.
+
 ### Rollbacks, uniqueness checks, allowed parameters
 
-There's a few things that sprang to mind which I didn't implement in my proof of concept. As an example, if the message publication fails post user creation; do we want to keep the user or consider that a failure? For the exercise I ploughed on, but it's straightforward to add a finally style block that in the case of any errors restores the prior situation.
+There's a few things that sprang to mind which I didn't implement in my proof of concept. As an example, if the message publication fails post user creation; do we want to keep the user or consider that a failure, do we add retries? For the exercise I ploughed on, but it's straightforward to add a finally style block that in the case of any errors restores the prior situation, or/and add retry code.
 
 In addition, I debated a while about making the email address a secondary index. It seems a fair assumption to limit one account per email; to do so in the code you add a secondary index to the table, add checks on insertion if the address already exists and also on update, but I didn't do it for the test here.
 
@@ -130,3 +132,7 @@ So, in a production environment, the component tests would be completely seperat
 ### Docs
 
 There's a few different options for linking the swagger generation of docs I've used here to the actual code (https://github.com/swaggo/swag, https://github.com/go-swagger/go-swagger), but I've not used any of them prior to this. In this case the swagger file will be manually maintained and compiled to an HTML file which is then added to a repo. You can shift the order of operations around with this, the HTML could be generated during the dockerised build in production rather than manually here.
+
+## Clients
+
+For both the clients, since they're used here primarily for the tests, I've not spent much time preparing them for a live environment; the regions, credentials and aws constants like table name and such are hardcoded into the instantiation methods. In a production environment, such details (which I would assume would also relate to which environment out of dev, prod...) would be passed to the execution container outwith the code and read from the environment, rather than being placed in the code.

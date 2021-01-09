@@ -34,7 +34,7 @@
             "surname": {"S": "Kaiwai"},
             "nickname": {"S": "Gratisfaction"},
             "password": {"S": "100T"},
-            "email": {"S": "ah@notarealemail.com"},
+            "email": {"S": "sk@notarealemail.com"},
             "country": {"S": "NZ"}
         }}
     },{"PutRequest": {"Item": {
