@@ -4,7 +4,8 @@
 
 The following tools are required to run the service locally:
 * Docker / Docker compose
-* The AWS CLI, with a local dummy configuration
+* The AWS CLI, with a local dummy configuration (`aws configure --profile localstack
+` with dummy values for keys)
 * Golang
 * [Localstack](https://github.com/localstack)
 
@@ -14,20 +15,17 @@ For full development, [Redoc](https://github.com/Redocly/redoc) is also used to 
 
 ### Service
 
-The service runs locally using a localstack container to emulate the database and messaging implementations.
+The service runs locally using a localstack container to emulate the database and messaging implementations, while the service container is a separate container managed in the same docker-compose file.
 
-Start up the localstack container
 ```
+# Build the image
+docker build -t faceit .
+
+# run docker-compose to start services
 docker-compose up
-```
 
-Separately
-```
-# Build the resources and populate the database with some test data
-source localstack.sh
-
-# run service
-go run .
+# Construct the databases, messaging and populate some test entries
+source local-stack.sh
 ```
 
 ### Unit tests
@@ -39,7 +37,7 @@ make test
 
 ### Full Component Tests
 
-The component tests here are a pseudo-substitute for testing on a canary/dev environment, but use the endpoints of a running service. To run these, once you have a running server and localstack container
+The component tests here are a pseudo-substitute for testing on a canary/dev environment, but use the endpoints of a running service. To run these the service docker-compose needs to be up, running and populated.
 ```
 make componenttests
 ```
