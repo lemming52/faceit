@@ -38,7 +38,7 @@ func main() {
 
 	server := &http.Server{
 		Handler: r,
-		Addr:    "127.0.0.1:3000",
+		Addr:    "0.0.0.0:3000",
 	}
 	log.Fatal(server.ListenAndServe())
 }

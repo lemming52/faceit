@@ -22,7 +22,7 @@ func NewSNSClient() *SNSClient {
 	}
 	client.client = sns.New(session.Must(session.NewSession(aws.NewConfig().
 		WithRegion("eu-west-1").
-		WithEndpoint("http://localhost:4566"). // Hardcoded for simplicity in task
+		WithEndpoint("http://localstack:4566"). // Hardcoded for simplicity in task
 		WithDisableEndpointHostPrefix(true).
 		WithDisableSSL(true).
 		WithCredentials(credentials.NewStaticCredentials("dummy", "dummy", "dummy")),

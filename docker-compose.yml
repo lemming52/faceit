@@ -8,3 +8,11 @@ services:
     environment:
       - SERVICES=dynamodb,sns,sqs
       - DEFAULT_REGION=eu-west-1
+      - EXTERNAL_HOSTNAME=localstack
+
+  faceit:
+    image: faceit
+    ports:
+      - "3000:3000"
+    depends_on:
+      - localstack

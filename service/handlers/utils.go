@@ -47,15 +47,15 @@ func errorToResponse(code int, err error) *ErrorResponse {
 }
 
 type HealthCheck struct {
-	service string `json:"service"`
-	version string `json:"version"`
+	Service string `json:"service"`
+	Version string `json:"version"`
 }
 
 func GetHealthCheckHandler(service, version string) func(w http.ResponseWriter, r *http.Request) {
 	return ToHandlerFunc(func(r *http.Request) (int, interface{}, error) {
 		return http.StatusOK, &HealthCheck{
-			service: service,
-			version: version,
+			Service: service,
+			Version: version,
 		}, nil
 	})
 }
