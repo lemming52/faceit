@@ -13,13 +13,28 @@ import (
 )
 
 const (
+	// Service is the name of the service
 	Service = "faceit-users"
+
+	// Version is the current version of the service
 	Version = "0.0.1"
+
+	// UsersURI is the address for the add and filter operations
 	UsersURI = "/users"
-	SingleUserUri = "/users/{id}"
-	HealthCheckUri = "/healthcheck"
-	DocsUri = "/docs"
+
+	// SingleUserURI is the address for any operation on a given user ID
+	SingleUserURI = "/users/{id}"
+
+	// HealthCheckURI is the uri for the basic status endpoint
+	HealthCheckURI = "/healthcheck"
+
+	// DocsURI is the endpoint for the prerendered documentation
+	DocsURI = "/docs"
+
+	// Host is the hardcoded local host for the service
+	// Note that changing the port will require alterations to the dockerfile and docker-compose
 	Host = "0.0.0.0:3000"
+)
 
 func main() {
 	log.SetFormatter(&logrus.JSONFormatter{})
@@ -31,19 +46,19 @@ func main() {
 	msg := getPublisher()
 
 	h := handlers.NewHandler(db, msg)
-	r.HandleFunc(DocsUri, handlers.GetDocHandler(handlers.DocPath)).Methods(http.MethodGet)
-	r.HandleFunc(HealthCheckUri, handlers.GetHealthCheckHandler(Service, Version))
+	r.HandleFunc(DocsURI, handlers.GetDocHandler(handlers.DocPath)).Methods(http.MethodGet)
+	r.HandleFunc(HealthCheckURI, handlers.GetHealthCheckHandler(Service, Version))
 
-	r.HandleFunc(SingleUserAPI, handlers.ToHandlerFunc(h.RemoveUser)).Methods(http.MethodDelete)
-	r.HandleFunc(SingleUserAPI, handlers.ToHandlerFunc(h.UpdateUser)).Methods(http.MethodPut)
-	r.HandleFunc(SingleUserAPI, handlers.ToHandlerFunc(h.GetUser)).Methods(http.MethodGet)
+	r.HandleFunc(SingleUserURI, handlers.ToHandlerFunc(h.RemoveUser)).Methods(http.MethodDelete)
+	r.HandleFunc(SingleUserURI, handlers.ToHandlerFunc(h.UpdateUser)).Methods(http.MethodPut)
+	r.HandleFunc(SingleUserURI, handlers.ToHandlerFunc(h.GetUser)).Methods(http.MethodGet)
 
-	r.HandleFunc(UsersAPI, handlers.ToHandlerFunc(h.AddUser)).Methods(http.MethodPost)
-	r.HandleFunc(UsersAPI, handlers.ToHandlerFunc(h.FilterUsers)).Methods(http.MethodGet)
+	r.HandleFunc(UsersURI, handlers.ToHandlerFunc(h.AddUser)).Methods(http.MethodPost)
+	r.HandleFunc(UsersURI, handlers.ToHandlerFunc(h.FilterUsers)).Methods(http.MethodGet)
 
 	server := &http.Server{
 		Handler: r,
-		Addr:    "0.0.0.0:3000",
+		Addr:    Host,
 	}
 	log.Fatal(server.ListenAndServe())
 }
