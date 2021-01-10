@@ -9,13 +9,17 @@ import (
 
 const DocPath = "./docs/index.html"
 
+// ErrorResponse is the struct used to return error messages via the endpoints
 type ErrorResponse struct {
 	Code        int    `json:"code"`
 	Description string `json:"description"`
 }
 
+// EndpointFunc defines the expected signature of any function used as an endpoint
 type EndpointFunc func(r *http.Request) (int, interface{}, error)
 
+// ToHandlerFunc converts the endpoint signature to the golang required signature
+// and handles writing of content to headers and response bodies.
 func ToHandlerFunc(e EndpointFunc) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		code, payload, err := e(r)
@@ -39,6 +43,7 @@ func ToHandlerFunc(e EndpointFunc) func(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
+// errorToResponse converts a HTTP status code and error description to an ErrorResponse
 func errorToResponse(code int, err error) *ErrorResponse {
 	return &ErrorResponse{
 		Code:        code,
@@ -46,11 +51,13 @@ func errorToResponse(code int, err error) *ErrorResponse {
 	}
 }
 
+// HealthCheck is the structure returned by the healthcheck endpoint
 type HealthCheck struct {
 	Service string `json:"service"`
 	Version string `json:"version"`
 }
 
+// GetHealthCheckHandler constructs a function to return service health information
 func GetHealthCheckHandler(service, version string) func(w http.ResponseWriter, r *http.Request) {
 	return ToHandlerFunc(func(r *http.Request) (int, interface{}, error) {
 		return http.StatusOK, &HealthCheck{
@@ -60,6 +67,7 @@ func GetHealthCheckHandler(service, version string) func(w http.ResponseWriter, 
 	})
 }
 
+// GetDocHandler constructs a function to return the static HTML docs
 func GetDocHandler(path string) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, path)

@@ -13,6 +13,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/expression"
 )
 
+// DynamoClient is an extension of the AWS dynamo struct, with the general purpose methods
+// altered to specific needs of this service
 type DynamoClient struct {
 	client       *dynamodb.DynamoDB
 	table        *string
@@ -21,6 +23,8 @@ type DynamoClient struct {
 	encoder      *dynamodbattribute.Encoder
 }
 
+// NewDynamoClient instantiates a new dynamo client object
+// For this test, this will only ever instantiate a client for use locally with the specific configuration used in testing
 func NewDynamoClient() *DynamoClient {
 	client := &DynamoClient{
 		table:        aws.String("faceit-users"),
@@ -39,6 +43,7 @@ func NewDynamoClient() *DynamoClient {
 	return client
 }
 
+// Get recovers a user object from the DB given a userID
 func (db *DynamoClient) Get(ctx context.Context, id string) (*model.User, error) {
 	user := &model.User{}
 	input := dynamodb.GetItemInput{
@@ -59,6 +64,7 @@ func (db *DynamoClient) Get(ctx context.Context, id string) (*model.User, error)
 	return user, nil
 }
 
+// Insert takes a user object and inserts it into the DynamoDB keyed on user ID
 func (db *DynamoClient) Insert(ctx context.Context, user *model.User) error {
 	attr, err := db.encode(user)
 	if err != nil {
@@ -72,6 +78,7 @@ func (db *DynamoClient) Insert(ctx context.Context, user *model.User) error {
 	return err
 }
 
+// Delete removes the entry for a given User ID
 func (db *DynamoClient) Delete(ctx context.Context, id string) error {
 	input := &dynamodb.DeleteItemInput{
 		TableName: db.table,
@@ -83,7 +90,7 @@ func (db *DynamoClient) Delete(ctx context.Context, id string) error {
 	return err
 }
 
-// small convenience function
+// small convenience function for converting results fetched from dynamo to go structs
 func (db *DynamoClient) decode(output map[string]*dynamodb.AttributeValue, object interface{}) {
 	attr := &dynamodb.AttributeValue{
 		M: output,
@@ -91,6 +98,7 @@ func (db *DynamoClient) decode(output map[string]*dynamodb.AttributeValue, objec
 	db.decoder.Decode(attr, object)
 }
 
+// small convenience function for converting go structs for entry into dynamo
 func (db *DynamoClient) encode(object interface{}) (map[string]*dynamodb.AttributeValue, error) {
 	attr, err := db.encoder.Encode(object)
 	if err != nil {
@@ -99,6 +107,8 @@ func (db *DynamoClient) encode(object interface{}) (map[string]*dynamodb.Attribu
 	return attr.M, nil
 }
 
+// Filter takes a set of filter conditions, compiles them into an expression and applied
+// that expression onto a scan of the table
 func (db *DynamoClient) Filter(ctx context.Context, conditions []*model.FilterCondition) ([]*model.User, error) {
 	var filters []expression.ConditionBuilder
 	for _, condition := range conditions {
@@ -131,6 +141,7 @@ func (db *DynamoClient) Filter(ctx context.Context, conditions []*model.FilterCo
 	return users, nil
 }
 
+// combineFilters takes a list of dynamo conditions and compiles a single condition
 func combineFilters(filters []expression.ConditionBuilder) expression.ConditionBuilder {
 	switch len(filters) {
 	case 1:
@@ -142,6 +153,7 @@ func combineFilters(filters []expression.ConditionBuilder) expression.ConditionB
 	}
 }
 
+// GetAll performs an empty scan, to return all users
 func (db *DynamoClient) GetAll(ctx context.Context) ([]*model.User, error) {
 	input := &dynamodb.ScanInput{
 		TableName: db.table,

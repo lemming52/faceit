@@ -26,11 +26,14 @@ type msgClient interface {
 	Publish(ctx context.Context, msg *model.Message) error
 }
 
+// Handler is a struct that exposes specific functions for the different endpoints, and stores
+// the references to clients to external services
 type Handler struct {
 	db  daoClient
 	msg msgClient
 }
 
+// NewHandler instantiates a new handler Object
 func NewHandler(db daoClient, msg msgClient) *Handler {
 	return &Handler{
 		db:  db,
@@ -38,9 +41,11 @@ func NewHandler(db daoClient, msg msgClient) *Handler {
 	}
 }
 
+// GetUser is used to return a specific user, given an ID
 func (h *Handler) GetUser(r *http.Request) (int, interface{}, error) {
 	ctx := r.Context()
 	id := mux.Vars(r)["id"]
+
 	log.WithField("id", id).Info("retrieve user")
 	user, err := h.db.Get(ctx, id)
 	if err != nil {
@@ -49,10 +54,12 @@ func (h *Handler) GetUser(r *http.Request) (int, interface{}, error) {
 		err = fmt.Errorf("unable to find user: %s", id)
 		return http.StatusNotFound, nil, err
 	}
+
 	log.WithField("user", user).Info("retrieved user")
 	return http.StatusOK, user, nil
 }
 
+// AddUser converts an add request to a user object and stores it in the DAO
 func (h *Handler) AddUser(r *http.Request) (int, interface{}, error) {
 	ctx := r.Context()
 	user := &model.User{
@@ -75,6 +82,7 @@ func (h *Handler) AddUser(r *http.Request) (int, interface{}, error) {
 		}).Error("unable to store user")
 		return http.StatusInternalServerError, nil, errors.New("unable to store user")
 	}
+
 	log.WithField("user", user).Info("publish message")
 	err = h.msg.Publish(ctx, model.NewMessage(user.Id, model.UserAdd))
 	if err != nil {
@@ -88,6 +96,7 @@ func (h *Handler) AddUser(r *http.Request) (int, interface{}, error) {
 	return http.StatusCreated, user, nil
 }
 
+// RemoveUser deletes the given user from the id from the DAO
 func (h *Handler) RemoveUser(r *http.Request) (int, interface{}, error) {
 	ctx := r.Context()
 	id := mux.Vars(r)["id"]
@@ -109,6 +118,7 @@ func (h *Handler) RemoveUser(r *http.Request) (int, interface{}, error) {
 		}).Error("unable to delete user")
 		return http.StatusInternalServerError, nil, fmt.Errorf("unable to remove user: %s", id)
 	}
+
 	log.WithField("id", id).Info("publish message")
 	err = h.msg.Publish(ctx, model.NewMessage(user.Id, model.UserDelete))
 	if err != nil {
@@ -121,6 +131,7 @@ func (h *Handler) RemoveUser(r *http.Request) (int, interface{}, error) {
 	return http.StatusNoContent, nil, nil
 }
 
+// UpdateUser takes a new user definition request and overwrites the existing definition in the DAO
 func (h *Handler) UpdateUser(r *http.Request) (int, interface{}, error) {
 	ctx := r.Context()
 	id := mux.Vars(r)["id"]
@@ -150,6 +161,7 @@ func (h *Handler) UpdateUser(r *http.Request) (int, interface{}, error) {
 		}).Error("unable to store user")
 		return http.StatusInternalServerError, nil, fmt.Errorf("unable to update user: %s", id)
 	}
+
 	log.WithField("id", id).Info("publish message")
 	err = h.msg.Publish(ctx, model.NewMessage(user.Id, model.UserDelete))
 	if err != nil {
@@ -162,6 +174,7 @@ func (h *Handler) UpdateUser(r *http.Request) (int, interface{}, error) {
 	return http.StatusOK, update, nil
 }
 
+// FilterUsers takes query parameters and applies them as filter conditions to all Users in the DAO
 func (h *Handler) FilterUsers(r *http.Request) (int, interface{}, error) {
 	ctx := r.Context()
 
@@ -171,6 +184,7 @@ func (h *Handler) FilterUsers(r *http.Request) (int, interface{}, error) {
 		log.Info("no query params, return all")
 		return h.GetAllUsers(ctx)
 	}
+
 	log.Info("prepare filter conditions")
 	for query, value := range r.URL.Query() {
 		condition, ok := prepareFilter(query, value)
@@ -195,6 +209,7 @@ func (h *Handler) FilterUsers(r *http.Request) (int, interface{}, error) {
 		log.Info("no results found for filters")
 		return http.StatusOK, "no results found", nil
 	}
+
 	log.WithField("results", results).Info("filtered users")
 	response := &model.FilterResponse{
 		Results: results,
@@ -219,6 +234,7 @@ func prepareFilter(query string, value []string) (*model.FilterCondition, bool) 
 	}
 }
 
+// GetAllUsers returns all users stored in the DAO
 func (h *Handler) GetAllUsers(ctx context.Context) (int, interface{}, error) {
 	log.Info("retrieve all users")
 	results, err := h.db.GetAll(ctx)

@@ -11,11 +11,14 @@ import (
 	"github.com/aws/aws-sdk-go/service/sns"
 )
 
+// SNSClient is a small extension of the AWS SNS client to allow for specific behaviour
 type SNSClient struct {
 	client   *sns.SNS
 	topicArn *string
 }
 
+// NewSNSClient instantiates a new SNS client for publishing messages to a user topic
+// This is configured for the local environment used in testing only.
 func NewSNSClient() *SNSClient {
 	client := &SNSClient{
 		topicArn: aws.String("arn:aws:sns:eu-west-1:000000000000:messages_sns"), // very hardcoded
@@ -30,6 +33,7 @@ func NewSNSClient() *SNSClient {
 	return client
 }
 
+// Publish publishes a message structure to the configured SNS topic
 func (pub *SNSClient) Publish(ctx context.Context, m *model.Message) error {
 	msg, err := json.Marshal(m)
 	if err != nil {
