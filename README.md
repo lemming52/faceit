@@ -77,15 +77,24 @@ The sections below deal with more loose discussion on the decisions, extensions 
 
 ## Assumptions
 
+* Users are uniquely identified by the generated key, subsequent services will use that internal ID always when referring to a user.
+
+* The input is basic alphanumeric for names and entries; not requiring full unicode, RTL or other non latin character sets
+
+* *It is sufficient to monitor only the API service / The DB & Messaging services can be trusted* - The healthcheck only reports on the API, it assumes the DB and the messaging is connected correctly and running correctly. This solution assumes that these services are reliable and monitoring of them is not the responsibility of this particular service.
+
+* *I have not considered error recovery, crash handling or operation conflict resolution at scale* - The exact operational behaviour when the service goes down depends on user desire, but this service is built on the assumption that the DB and messaging are stable, any error case can be returned to the user as an error, and there's no need to manage graceful shutdown and restart; if this service fails, it should just be started again.
+
 * *The input to this service is controlled.* - I feel this is important as it relates to some of the checks we need to do in the service for safety in a production environment. My assumption is that the form data to add or update a user is coming from some authenticated app, say in a webpage, so I don't need to produce safety checks for the brief. Specifically I'm referring to simple things like ensuring the country code is valid (dropdown on form), ensuring the nickname contains allowed characters or more serious things like ensuring any externally entered data is cleaned.
 
 * *Handling of sensitive data and PII is outwith this tests scope.* - In my example email and password will be stored unencrypted in the DB. In a production environment I'd also make sure that the request bodies for these operations are not logged, so as to not expose the sensitive data.
 
 * Email collisions are fine. - More a simplicity thing for time rather than a difficulty, I mention implementing this in the extensions section.
 
+* Filter/Search functionality is less prioritised than the act to storing and managing user lifecycles. - I used DynamoDB, partly as I'm familiar with it, but also as in terms of a DB for storing specific structures scalably and reliably it's a good choice. Where it's less strong is on the searchability; fuzzy search or things like that are trickier and can get expensive.
+
 * Filter/Search functionality is exact match. - Relates to the point below, but for the sake of the brief assumed recovering exact values was needed.
 
-* Filter/Search functionality is less prioritised than the act to storing and managing user lifecycles. - I used DynamoDB, partly as I'm familiar with it, but also as in terms of a DB for storing specific structures scalably and reliably it's a good choice. Where it's less strong is on the search ability; fuzzy search or things like that are trickier and can get expensive.
 
 ## Alternatives
 
@@ -140,3 +149,7 @@ There's a few different options for linking the swagger generation of docs I've 
 ## Clients
 
 For both the clients, since they're used here primarily for the tests, I've not spent much time preparing them for a live environment; the regions, credentials and aws constants like table name and such are hardcoded into the instantiation methods. In a production environment, such details (which I would assume would also relate to which environment out of dev, prod...) would be passed to the execution container outwith the code and read from the environment, rather than being placed in the code.
+
+## Automated Testing  / Healthchecks
+
+This service healthcheck is designed to be repeatedly called by some exteral automation. The healthcheck could be expanded to perform some basic operations to ensure integrity rather than just responding, or the external automation could include calls to the other endpoints with expected values.
