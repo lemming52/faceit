@@ -1,5 +1,6 @@
-export AWS_ACCESS_KEY_ID=foobar
-export AWS_SECRET_ACCESS_KEY=foobar
+# Configures a local AWS environment for auth, unused
+export AWS_ACCESS_KEY_ID=dummy
+export AWS_SECRET_ACCESS_KEY=dummy
 
 aws dynamodb create-table \
 --endpoint-url=http://localhost:4566 \

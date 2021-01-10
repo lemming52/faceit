@@ -56,6 +56,10 @@ The component tests here are a pseudo-substitute for testing on a canary/dev env
 make componenttests
 ```
 
+Note that these will fail in two cases:
+* You overwrite details of the test users
+* You add more users, taking the total count up. This will only fail the count test for obvious reasons
+
 ## Brief
 
 Remark | Comment
