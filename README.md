@@ -25,7 +25,7 @@ docker build -t faceit .
 docker-compose up
 
 # Construct the databases, messaging and populate some test entries
-source local-stack.sh
+source localstack.sh
 ```
 
 ### Usage
